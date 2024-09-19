@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto';
 import { PaginationDto } from 'src/common/dto';
 import { JwtOauthGuard } from 'src/auth/guards/jwt.oauth.guard';
 
+//solo deberia ser ejecutado por administradores
 @UseGuards(JwtOauthGuard)
 @Controller('users')
 export class UsersController {

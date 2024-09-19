@@ -24,9 +24,8 @@ export class RoomsController {
   @Get('find')
   async findAllRooms(
     @Query() paginationDto: PaginationDto,
-    @Query('isAvailable', ParseBoolPipe) isAvailable: boolean,
   ) {
-    return await this.roomsService.findAllRooms(paginationDto, isAvailable);
+    return await this.roomsService.findAllRooms(paginationDto);
   }
 
   // /rooms/find/123e4567-e89b-12d3-a456-426614174000

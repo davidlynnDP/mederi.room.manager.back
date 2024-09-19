@@ -5,18 +5,12 @@ import { CommonService } from 'src/common/common.service';
 import { PaginationDto } from 'src/common/dto';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { UsersService } from 'src/users/users.service';
-
-enum ReservationStatus {
-  CONFIRMADO = 'CONFIRMADO',
-  CANCELADO = 'CANCELADO',
-  PENDIENTE = 'PENDIENTE',
-}
+import { fieldsForReservations } from './constants';
 
 interface FiltersReservationsParams {
   userId?: string;
   roomId?: string;
   paginationDto?: PaginationDto;
-  status?: ReservationStatus;
 }
 
 @Injectable()
@@ -39,13 +33,16 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
     super();
   }
 
-  private validateDates(startTime?: Date, endTime?: Date): void {
-    
-    if (startTime && endTime && new Date(startTime) >= new Date(endTime)) {
-      throw new BadRequestException('startTime must be before endTime');
+  private validateDates(startTime?: string, endTime?: string): void {
+    if (startTime && endTime) {
+      const startDate = new Date(startTime);
+      const endDate = new Date(endTime);
+  
+      if (startDate >= endDate) {
+        throw new BadRequestException('startTime must be before endTime');
+      }
     }
   }
-  
   
   async createReservation(createReservationDto: CreateReservationDto) {
 
@@ -60,6 +57,7 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
           userId,
           roomId,
         },
+        include: fieldsForReservations
       });
 
     } catch (error) {
@@ -67,9 +65,9 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  async findAllReservations(paginationDto: PaginationDto, status: ReservationStatus = ReservationStatus.PENDIENTE) {
+  async findAllReservations(paginationDto: PaginationDto) {
 
-    const { page, limit } = paginationDto;
+    const { page, limit, status } = paginationDto;
 
     const totalPages = await this.reservation.count({ where: { status } }); 
     const lastPage = Math.ceil(totalPages / limit);
@@ -96,10 +94,7 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
       where: {
         id: id
       },
-      include: {
-        user: true,
-        room: true
-      }
+      include: fieldsForReservations
     });
   
     if (!reservation) {
@@ -119,6 +114,7 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
       return this.reservation.update({
         where: { id },
         data: updateReservationDto,
+        include: fieldsForReservations
       });
       
     } catch (error) {
@@ -139,15 +135,14 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  async getReservationsByUser(userId: string, paginationDto: PaginationDto, status: ReservationStatus = ReservationStatus.PENDIENTE) {
+  async getReservationsByUser(userId: string, paginationDto: PaginationDto) {
 
     try {
       await this.usersService.findOneUser({ id: userId });
 
       return await this.getReservations({
         userId,
-        paginationDto,
-        status
+        paginationDto
       });
 
     } catch (error) {
@@ -155,15 +150,14 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  async getReservationsByRoom(roomId: string, paginationDto: PaginationDto, status: ReservationStatus = ReservationStatus.PENDIENTE) {
+  async getReservationsByRoom(roomId: string, paginationDto: PaginationDto) {
 
     try {
       await this.roomsService.findRoomById(roomId);
 
       return await this.getReservations({
         roomId,
-        paginationDto,
-        status
+        paginationDto
       });
 
     } catch (error) {
@@ -171,9 +165,9 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  private async getReservations({ userId, roomId, paginationDto, status = ReservationStatus.PENDIENTE }: FiltersReservationsParams) {
+  private async getReservations({ userId, roomId, paginationDto }: FiltersReservationsParams) {
   
-    const { page, limit } = paginationDto;
+    const { page, limit, status } = paginationDto;
 
     const totalPages = await this.reservation.count({ where: { status } }); 
     const lastPage = Math.ceil(totalPages / limit);

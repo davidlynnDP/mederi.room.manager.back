@@ -1,5 +1,4 @@
-import { IsDateString, IsNotEmpty, IsString, IsEnum, IsUUID } from 'class-validator';
-import { ReservationStatus } from '@prisma/client';
+import { IsDateString, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { IsBefore } from '../validators';
 
 export class CreateReservationDto {
@@ -15,18 +14,14 @@ export class CreateReservationDto {
 
   @IsDateString()
   @IsNotEmpty()
-  reservationDate: Date;
+  reservationDate: string;
 
   @IsDateString()
   @IsNotEmpty()
   @IsBefore('endTime', { message: 'startTime must be before endTime' })
-  startTime: Date;
+  startTime: string;
 
   @IsDateString()
   @IsNotEmpty()
-  endTime: Date;
-
-  @IsEnum(ReservationStatus)
-  @IsNotEmpty()
-  status: ReservationStatus;
+  endTime: string;
 }

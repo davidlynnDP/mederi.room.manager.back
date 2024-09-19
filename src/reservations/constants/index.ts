@@ -1,0 +1,1 @@
+export { fieldsForReservations } from "./fields-for-reservations.constant";

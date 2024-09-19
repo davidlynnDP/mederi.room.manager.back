@@ -5,11 +5,6 @@ import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { JwtOauthGuard } from 'src/auth/guards/jwt.oauth.guard';
 import { PaginationDto } from 'src/common/dto';
 
-enum ReservationStatus {
-  CONFIRMADO = 'CONFIRMADO',
-  CANCELADO = 'CANCELADO',
-  PENDIENTE = 'PENDIENTE',
-}
 
 @UseGuards(JwtOauthGuard)
 @Controller('reservations')
@@ -37,10 +32,9 @@ export class ReservationsController {
    */
   @Get('find')
   async findAllReservations(
-    @Query() paginationDto: PaginationDto,
-    @Query('status') status?: ReservationStatus,
+    @Query() paginationDto: PaginationDto
   ) {
-    return await this.reservationsService.findAllReservations(paginationDto, status);
+    return await this.reservationsService.findAllReservations(paginationDto);
   }
 
   /**
@@ -89,10 +83,9 @@ export class ReservationsController {
   @Get('/user/:userId')
   async getReservationsByUser(
     @Param('userId', ParseUUIDPipe) userId: string,
-    @Query() paginationDto: PaginationDto,
-    @Query('status') status?: ReservationStatus,
+    @Query() paginationDto: PaginationDto
   ) {
-    return await this.reservationsService.getReservationsByUser(userId, paginationDto, status);
+    return await this.reservationsService.getReservationsByUser(userId, paginationDto);
   }
 
   /**
@@ -103,9 +96,8 @@ export class ReservationsController {
   @Get('/room/:roomId')
   async getReservationsByRoom(
     @Param('roomId', ParseUUIDPipe) roomId: string,
-    @Query() paginationDto: PaginationDto,
-    @Query('status') status?: ReservationStatus,
+    @Query() paginationDto: PaginationDto
   ) {
-    return await this.reservationsService.getReservationsByRoom(roomId, paginationDto, status);
+    return await this.reservationsService.getReservationsByRoom(roomId, paginationDto);
   }
 }

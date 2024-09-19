@@ -6,7 +6,7 @@ export const GetUser = createParamDecorator(
 
         const req = ctx.switchToHttp().getRequest();
         const user = req.user as JwtOAuthUser;
-    
+            
         if ( !user ) {
           throw new InternalServerErrorException('User not found in (request)');
         }

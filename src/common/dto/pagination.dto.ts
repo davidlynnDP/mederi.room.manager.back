@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsEnum, IsOptional, IsPositive } from 'class-validator';
+
+enum ReservationStatus {
+  CONFIRMADO = 'CONFIRMADO',
+  CANCELADO = 'CANCELADO',
+  PENDIENTE = 'PENDIENTE',
+}
 
 export class PaginationDto {
 
@@ -12,5 +18,13 @@ export class PaginationDto {
   @IsOptional()
   @Type(() => Number)
   limit?: number = 10;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  isAvailable?: boolean = true;
+
+  @IsOptional()
+  @IsEnum(ReservationStatus)
+  status?: ReservationStatus = ReservationStatus.PENDIENTE;
 
 }

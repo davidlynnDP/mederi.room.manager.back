@@ -8,6 +8,7 @@ import { CommonModule } from 'src/common/common.module';
 import { AuthController } from './auth.controller';
 import { envs } from 'src/config';
 import { JwtOauthStrategy } from './strategies/jwt.strategy';
+import { JwtOauthGuard } from './guards/jwt.oauth.guard';
 
 @Module({
   controllers: [
@@ -15,17 +16,22 @@ import { JwtOauthStrategy } from './strategies/jwt.strategy';
   ],
   providers: [
     AuthService,
-    JwtOauthStrategy
+    JwtOauthStrategy,
+    JwtOauthGuard,
   ],
   imports: [
     UsersModule,
     CommonModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       global: true,
       secret: envs.jwtConstantSecret,
       signOptions: { expiresIn: '30d' },
     }),
+  ],
+  exports: [
+    AuthService,
+    JwtOauthGuard
   ]
 })
 export class AuthModule {}

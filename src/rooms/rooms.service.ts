@@ -49,9 +49,9 @@ export class RoomsService extends PrismaClient implements OnModuleInit {
 
   }
 
-  async findAllRooms(paginationDto: PaginationDto, isAvailable: boolean = true) {
+  async findAllRooms(paginationDto: PaginationDto) {
 
-    const { page, limit } = paginationDto;
+    const { page, limit, isAvailable } = paginationDto;
 
     const totalPages = await this.room.count({ where: { isAvailable } }); 
     const lastPage = Math.ceil(totalPages / limit);
@@ -93,30 +93,47 @@ export class RoomsService extends PrismaClient implements OnModuleInit {
 
   async updateRoom(id: string, updateRoomDto: UpdateRoomDto) {
 
-    await this.findRoomById( id ) as Room;;
-    const { resources, ...roomData } = updateRoomDto;
-  
-    return await this.room.update({
-      where: { 
-        id: id 
-      },
-      data: {
-        ...roomData,
-        resources: resources ? this.processResources(resources) : undefined,
-      },
-      include: { 
-        resources: true
-      },
-    });
+    try {
+
+      await this.findRoomById( id ) as Room;;
+      const { resources, ...roomData } = updateRoomDto;
+    
+      return await this.room.update({
+        where: { 
+          id: id 
+        },
+        data: {
+          ...roomData,
+          resources: resources ? this.processResources(resources) : undefined,
+        },
+        include: { 
+          resources: true
+        },
+      });
+      
+    } catch (error) {
+      this.commonService.globalErrorHandler(error);
+    }
+
   }
   
 
   async deleteRoom(id: string) {
-    return await this.room.delete({
-      where: { 
-        id: id 
-      },
-    });
+
+    try {
+
+      await this.findRoomById( id )
+    
+      return await this.room.delete({
+        where: { 
+          id: id 
+        },
+      });
+
+    } catch (error) {
+      this.commonService.globalErrorHandler(error);
+    }
+
   }
 
   private processResources(resources: UpdateRoomResourceDto[]) {

@@ -26,11 +26,18 @@ export class AuthService {
 
     try {
 
-      const { id, iat, exp } = this.jwtService.verify(token, {
-        secret: envs.jwtConstantSecret,
-      });
+      const payload = await this.jwtService.verifyAsync(
+        token, 
+        {
+          secret: envs.jwtConstantSecret,
+        }
+      );
 
-      const user = await this.usersService.findOneUser({ id });
+      if (!payload.id) {
+        throw new BadRequestException('Invalid token payload');
+      }
+
+      const user = await this.usersService.findOneUser({ id: payload.id });
 
       return {
         user: user,

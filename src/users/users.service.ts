@@ -138,7 +138,6 @@ export class UsersService extends PrismaClient implements OnModuleInit {
       where: {
         ...(id && { id }),
         ...(email && { email }),
-        isActive: true,
       },
     });
   
@@ -152,45 +151,59 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
 
-    const user = await this.findOneUser({ id, includePassword: true }) as User;;
-    const { password } = updateUserDto;
+    try {
 
-    const hashedPassword = password 
-            ? bcrypt.hashSync(password, salt) 
-            : user.password;
+      const user = await this.findOneUser({ id, includePassword: true }) as User;;
+      const { password } = updateUserDto;
+  
+      const hashedPassword = password 
+              ? bcrypt.hashSync(password, salt) 
+              : user.password;
+  
+      const userUpdated = await this.user.update({
+        where: { id: id },
+        data: {
+          ...updateUserDto,
+          password: hashedPassword,
+        },
+      });
+  
+      const { password: _, ...result } = userUpdated;
+  
+      return {
+        ...result,
+      };
 
-    const userUpdated = await this.user.update({
-      where: { id: id },
-      data: {
-        ...updateUserDto,
-        password: hashedPassword,
-      },
-    });
+    } catch (error) {
+      this.commonService.globalErrorHandler(error);
+    }
 
-    const { password: _, ...result } = userUpdated;
 
-    return {
-      ...result,
-    };
   }
 
   async removeUser(id: string) {
 
-    await this.findOneUser({ id });
+    try {
+      await this.findOneUser({ id });
 
-    //soft delete
-    const user = await this.user.update({
-      where: { id: id },
-      data: {
-        isActive: false,
-      },
-    });
+      //soft delete
+      const user = await this.user.update({
+        where: { id: id },
+        data: {
+          isActive: false,
+        },
+      });
 
-    const { password: _, ...result } = user;
+      const { password: _, ...result } = user;
 
-    return {
-      ...result,
-    };
+      return {
+        ...result,
+      };
+      
+    } catch (error) {
+      this.commonService.globalErrorHandler(error);
+    }
+
   }
 
   private removePassword(user: User, includePassword: boolean): User | Omit<User, 'password'> {

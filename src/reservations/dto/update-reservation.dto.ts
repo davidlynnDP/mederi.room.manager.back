@@ -15,16 +15,16 @@ export class UpdateReservationDto {
 
   @IsDateString()
   @IsOptional()
-  reservationDate?: Date;
+  reservationDate?: string;
 
   @IsDateString()
   @IsOptional()
   @IsBefore('endTime', { message: 'startTime must be before endTime' })
-  startTime?: Date;
+  startTime?: string;
 
   @IsDateString()
   @IsOptional()
-  endTime?: Date;
+  endTime?: string;
 
   @IsEnum(ReservationStatus)
   @IsOptional()

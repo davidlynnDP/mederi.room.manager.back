@@ -27,6 +27,7 @@ async function bootstrap() {
 }
 bootstrap();
 //docker-compose up -d
+//npm run start:dev
 
 //npm i prisma --save-dev
 //npx prisma init

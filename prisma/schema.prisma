@@ -41,61 +41,59 @@ model User {
   role                 UserRole
   isActive             Boolean  @default(true)
 
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  reservations         Reservation[]  
+  reservations Reservation[]
 
   @@index([isActive])
 }
 
 model Room {
-  id          String    @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   capacity    Int
   location    String
-  roomType    RoomType  
-  isAvailable Boolean   @default(true)
+  roomType    RoomType
+  isAvailable Boolean  @default(true)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  reservations Reservation[]   
-  resources    RoomResource[]   
+  reservations Reservation[]
+  resources    RoomResource[]
 
   @@index([isAvailable])
 }
 
 model RoomResource {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   name        String
   category    String
   description String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  room        Room     @relation(fields: [roomId], references: [id])  
-
-  roomId      String
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
 
 model Reservation {
-  id              String              @id @default(uuid())
+  id              String            @id @default(uuid())
   reservationDate DateTime
   startTime       DateTime
   endTime         DateTime
-  status          ReservationStatus   @default(PENDIENTE)  
+  status          ReservationStatus @default(PENDIENTE)
 
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  user            User                @relation(fields: [userId], references: [id]) 
-  room            Room                @relation(fields: [roomId], references: [id]) 
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
 
-  userId          String
-  roomId          String
+  userId String
+  roomId String
 
   @@unique([roomId, startTime, endTime])
 }
-
