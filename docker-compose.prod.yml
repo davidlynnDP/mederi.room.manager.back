@@ -1,0 +1,40 @@
+version: '3'
+
+
+services:
+
+  app:
+    build:
+      context: .
+      target: ${STAGE}
+      dockerfile: Dockerfile
+
+    image: dav1dlynn/mederi.room.manager.back:latest
+    container_name: mederi.room.manager
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      STAGE: ${STAGE}
+      PORT: ${PORT}
+      JWT_CONSTANT_SECRET: ${JWT_CONSTANT_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  
+  mederi-room-manager:
+    image: mysql:lts
+    restart: always
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    container_name: ${MYSQL_DATABASE}
+    volumes:
+      - ./mysql:/var/lib/mysql
