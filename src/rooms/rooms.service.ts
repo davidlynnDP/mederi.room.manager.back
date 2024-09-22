@@ -98,17 +98,27 @@ export class RoomsService extends PrismaClient implements OnModuleInit {
       await this.findRoomById( id ) as Room;;
       const { resources, ...roomData } = updateRoomDto;
     
+      if (resources) {
+        await this.roomResource.deleteMany({
+          where: { roomId: id },
+        });
+  
+        await this.roomResource.createMany({
+          data: resources.map((resource) => ({
+            roomId: id, 
+            name: resource.name,
+            category: resource.category,
+            description: resource.description,
+          })),
+        });
+      }
+  
       return await this.room.update({
-        where: { 
-          id: id 
-        },
-        data: {
-          ...roomData,
-          resources: resources ? this.processResources(resources) : undefined,
-        },
+        where: { id },
+        data: { ...roomData },
         include: { 
-          resources: true
-        },
+          resources: true 
+        }, 
       });
       
     } catch (error) {
@@ -134,26 +144,6 @@ export class RoomsService extends PrismaClient implements OnModuleInit {
       this.commonService.globalErrorHandler(error);
     }
 
-  }
-
-  private processResources(resources: UpdateRoomResourceDto[]) {
-    return {
-      upsert: resources.map((resource) => ({
-        where: { 
-          id: resource.id || undefined 
-        }, 
-        update: {
-          name: resource.name,
-          category: resource.category,
-          description: resource.description,
-        },
-        create: {
-          name: resource.name,
-          category: resource.category,
-          description: resource.description,
-        },
-      })),
-    };
   }
   
 }

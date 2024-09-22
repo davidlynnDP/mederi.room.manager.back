@@ -113,7 +113,9 @@ export class ReservationsService extends PrismaClient implements OnModuleInit {
 
       return this.reservation.update({
         where: { id },
-        data: updateReservationDto,
+        data: {
+          ...updateReservationDto
+        },
         include: fieldsForReservations
       });
       
