@@ -4,7 +4,6 @@ import { UpdateUserDto } from './dto';
 import { PaginationDto } from 'src/common/dto';
 import { JwtOauthGuard } from 'src/auth/guards/jwt.oauth.guard';
 
-//solo deberia ser ejecutado por administradores
 @UseGuards(JwtOauthGuard)
 @Controller('users')
 export class UsersController {
@@ -13,7 +12,6 @@ export class UsersController {
     private readonly usersService: UsersService
   ) {}
 
-  // /users/find?page=1&limit=10
   @Get('find')
   async findAllUsers(
     @Query() paginationDto: PaginationDto
@@ -21,7 +19,6 @@ export class UsersController {
     return await this.usersService.findAllUsers(paginationDto);
   }
 
-  // /users/find/:id
   @Get('find/:id')
   async findOneUser(
     @Param('id', ParseUUIDPipe) id: string
@@ -29,7 +26,6 @@ export class UsersController {
     return await this.usersService.findOneUser({ id });
   }
 
-  // /users/:id
   @Patch(':id')
   async updateUser(
     @Param('id', ParseUUIDPipe) id: string,
@@ -38,7 +34,6 @@ export class UsersController {
     return await this.usersService.updateUser(id, updateUserDto);
   }
 
-  // /users/:id
   @Delete(':id')
   async removeUser(
     @Param('id', ParseUUIDPipe) id: string

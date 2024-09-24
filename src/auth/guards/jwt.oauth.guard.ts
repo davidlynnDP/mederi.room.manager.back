@@ -22,7 +22,7 @@ export class JwtOauthGuard extends AuthGuard('jwt') implements CanActivate {
   ): Promise<boolean> {
 
     const request = context.switchToHttp().getRequest();
-    const authenticationToken = this.extractTokenFromHeader(request); //tenemos el token
+    const authenticationToken = this.extractTokenFromHeader(request);
 
     try {
       const { user } = await this.verifyToken(authenticationToken);

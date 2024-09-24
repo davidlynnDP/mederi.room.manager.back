@@ -5,11 +5,6 @@ export class CommonService {
     
     private readonly logger = new Logger('CommonService');
 
-    /**
-     * Maneja los errores globales de la aplicación.
-     * @param error - El error capturado que se debe manejar.
-     * @throws HttpException - Lanza una excepción HTTP adecuada en base al tipo de error.
-     */
     globalErrorHandler(error: any): void {
 
         console.log(error)

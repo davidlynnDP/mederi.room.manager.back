@@ -13,7 +13,6 @@ export class AuthController {
     private readonly authService: AuthService
   ) {}
 
-  // /auth/register
   @Post('register')
   async registerNewUser(
     @Body() createUserDto: CreateUserDto,
@@ -21,7 +20,6 @@ export class AuthController {
     return await this.authService.registerUser(createUserDto);
   }
 
-  // /auth/login
   @Post('login')
   async loginUser(
     @Body() loginUser: LoginUserDto
@@ -29,7 +27,6 @@ export class AuthController {
     return await this.authService.loginUser(loginUser);
   }
 
-  // /auth/new_token
   @Get('new_token')
   @UseGuards(JwtOauthGuard)
   async checkAuthStatus(
